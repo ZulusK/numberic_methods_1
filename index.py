@@ -1,3 +1,5 @@
-import tools
+import cui.greeting
 
-print(tools.derivative("x*2+45**x", 2))
+
+if __name__ == '__main__':
+    cui.greeting.init()
