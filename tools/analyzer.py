@@ -29,3 +29,16 @@ def derivative(func, level=1):
 
 def str_to_func(formula):
     return sympify(formula)
+
+
+def gen_function_values_list(func, l, r, eps=1e-3):
+    x = l
+    while x <= r:
+        yield eval_func_at_point(func, x)
+        x += eps
+
+
+def apply(generator, cbs):
+    for i in generator:
+        for cb in cbs:
+            cb(i)

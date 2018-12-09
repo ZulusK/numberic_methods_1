@@ -1,30 +1,41 @@
 import inquirer
-from tools import analyzer
-from tools.MethodError import MethodError
+import tools
+from sympy import abc
+
+
+def extended_end_condition(curr_x, prev_x, q, eps):
+    return abs(curr_x - prev_x) <= eps
+
+
+def simple_end_condition(curr_x, prev_x, q, eps):
+    return abs(curr_x - prev_x) <= (eps * (1 - q)) / q
 
 
 def process(func, a, b, eps=1e-10):
-    fd = analyzer.derivative(func)
-    sd = analyzer.derivative(fd)
+    fd = tools.derivative(func)
+    sd = tools.derivative(fd)
     print("f(x)'=%s" % fd)
     print("f(x)''=%s" % sd)
-    va = analyzer.eval_func_at_point(func, a)
-    vb = analyzer.eval_func_at_point(func, b)
+    va = tools.eval_func_at_point(func, a)
+    vb = tools.eval_func_at_point(func, b)
     print("f(%s)=%s, f(%s)=%s" % (a, va, b, vb))
-    if abs(va) < eps:
-        return a
-    if abs(vb) < eps:
-        return b
-    if va * vb > 0:
-        raise MethodError("f(%s)*f(%s)>0" % (a, b))
-    prev_x = a if va * analyzer.eval_func_at_point(sd, a) > 0 else b
-    divider = analyzer.eval_func_at_point(fd, prev_x)
+    maxFinder = tools.MaxFinder()
+    minFinder = tools.MinFinder()
+    tools.apply(tools.gen_function_values_list(fd, a, b), [maxFinder.visit, minFinder.visit])
+    A = maxFinder.max
+    B = minFinder.min
+    L = 2 / (A + B) * (-1 if va > 0 else 1)
+    Q = (A - B) / (A + B)
+    Q = 1 if Q > 1 else Q
+    phi = abc.x - L * func
+    prev_x = a if va * tools.eval_func_at_point(sd, a) > 0 else b
     i = 1
+    is_end_condition_happen = simple_end_condition if Q <= 0.5 else extended_end_condition
     print("X0=%s" % prev_x)
     while True:
-        curr_x = prev_x - analyzer.eval_func_at_point(func, prev_x) / divider
+        curr_x = tools.eval_func_at_point(phi, prev_x)
         print("<%s> X%s=%s" % (i + 1, i, curr_x))
-        if abs(prev_x - curr_x) < eps:
+        if is_end_condition_happen(curr_x, prev_x, Q, eps):
             return curr_x
         prev_x = curr_x
         i += 1
@@ -38,8 +49,7 @@ def init():
     # ]
     # answers = inquirer.prompt(questions)
     answers = {'function': 'cos(x)^3+(x^3)*exp(x)-(x^6)-35', 'a': 4, 'b': 6}
-    function = analyzer.sympify(answers.get('function').replace('^', '**'))
-    print(analyzer.eval_func_at_point(function, 4.54803012545095))
+    function = tools.sympify(answers.get('function').replace('^', '**'))
     print("You entered f(x) = %s" % function)
     process(function, answers.get('a'), answers.get('b'))
 # print(tools.eval_func_at_point(answers.get('function'), 4))

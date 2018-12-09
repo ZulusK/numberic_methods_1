@@ -1,5 +1,7 @@
 import inquirer
 from cui import simplifiedNewton
+from cui import fixedPointIterations
+from cui import dihotomy
 from tools.MethodError import MethodError
 
 # inquirer.List('size',
@@ -33,7 +35,8 @@ def init():
     #     answers = inquirer.prompt(questions)
     #     mode = answers.get('mode')
     #     if mode == SIMPLIFIED_NEWTON:
-    simplifiedNewton.init()
+    # fixedPointIterations.init()
+    dihotomy.init()
 #     if mode == EXIT:
 #         return
 # except MethodError as e:

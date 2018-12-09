@@ -1,31 +1,35 @@
 import inquirer
 import tools
+from sympy import abc
+
+
+def end_condition(l, r, eps):
+    return abs(l - r) <= eps
 
 
 def process(func, a, b, eps=1e-10):
-    fd = tools.derivative(func)
-    sd = tools.derivative(fd)
-    print("f(x)'=%s" % fd)
-    print("f(x)''=%s" % sd)
     va = tools.eval_func_at_point(func, a)
     vb = tools.eval_func_at_point(func, b)
     print("f(%s)=%s, f(%s)=%s" % (a, va, b, vb))
-    if abs(va) < eps:
-        return a
-    if abs(vb) < eps:
-        return b
-    if va * vb > 0:
-        raise tools.MethodError("f(%s)*f(%s)>0" % (a, b))
-    prev_x = a if va * tools.eval_func_at_point(sd, a) > 0 else b
-    divider = tools.eval_func_at_point(fd, prev_x)
+    left = a
+    right = b
+    value_at_left = va
+    # value_at_right = vb
     i = 1
+    prev_x = (a + b) / 2
     print("X0=%s" % prev_x)
     while True:
-        curr_x = prev_x - tools.eval_func_at_point(func, prev_x) / divider
+        curr_x = (left + right) / 2
         print("<%s> X%s=%s" % (i + 1, i, curr_x))
-        if abs(prev_x - curr_x) < eps:
+        if end_condition(left, right, eps):
             return curr_x
-        prev_x = curr_x
+        value_at_x = tools.eval_func_at_point(func, curr_x)
+        if value_at_left * value_at_x < 0:
+            # value_at_right = value_at_x
+            left, right = left, curr_x
+        else:
+            value_at_left = value_at_x
+            left, right = curr_x, right
         i += 1
 
 
@@ -38,7 +42,6 @@ def init():
     # answers = inquirer.prompt(questions)
     answers = {'function': 'cos(x)^3+(x^3)*exp(x)-(x^6)-35', 'a': 4, 'b': 6}
     function = tools.sympify(answers.get('function').replace('^', '**'))
-    print(tools.eval_func_at_point(function, 4.54803012545095))
     print("You entered f(x) = %s" % function)
     process(function, answers.get('a'), answers.get('b'))
 # print(tools.eval_func_at_point(answers.get('function'), 4))
