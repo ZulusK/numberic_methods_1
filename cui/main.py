@@ -2,6 +2,7 @@ import inquirer
 from methods import dihotomy
 from methods import fixedPointIterations
 from methods import simplifiedNewton
+import re
 import tools
 
 # inquirer.List('size',
@@ -23,19 +24,29 @@ SIMPLIFIED_NEWTON = 'simplified newton method'
 DICHOTOMY = 'dichotomy method'
 FIXED_POINT_ITERATIONS = 'fixed points iterations method'
 EXIT = 'exit'
+NUMBER_REGEXP = re.compile("^[-+]?\d*(\.\d+)?$")
 
 
 def ask_function():
     questions = [
-        inquirer.Text('function', message="Enter source function, f(x) = "),
-        inquirer.Text('a', message="Enter the left-border"),
-        inquirer.Text('b', message="Enter the right-border"),
+        inquirer.Text('function', message="Enter source function, f(x) = ", validate=lambda _, v: len(v) > 0),
+        inquirer.Text('a', message="Enter the left-border", validate=lambda _, v: NUMBER_REGEXP.match(v)),
+        inquirer.Text('b', message="Enter the right-border", validate=lambda _, v: NUMBER_REGEXP.match(v)),
     ]
-    answers = inquirer.prompt(questions)
-    # answers = {'function': 'cos(x)^3+(x^3)*exp(x)-(x^6)-35', 'a': 4, 'b': 6}
+    answers = None
+    while True:
+        answers = inquirer.prompt(questions)
+        a = float(answers.get('a'))
+        b = float(answers.get('b'))
+        if a >= b:
+            print('Caution! a==b, try again')
+        else:
+            answers['a'] = a
+            answers['b'] = b
+            break
     function = tools.sympify(answers.get('function').replace('^', '**'))
     print("You entered f(x) = %s" % function)
-    return answers.get('function'), answers.get('a'), answers.get('b')
+    return function, answers.get('a'), answers.get('b')
 
 
 def init():
@@ -49,14 +60,17 @@ def init():
         try:
             answers = inquirer.prompt(questions)
             (function, a, b) = ask_function()
+            x = None
             mode = answers.get('mode')
             if mode == SIMPLIFIED_NEWTON:
-                simplifiedNewton.process(function, a, b)
+                x = simplifiedNewton.process(function, a, b)
             if mode == DICHOTOMY:
-                dihotomy.process(function, a, b)
+                x = dihotomy.process(function, a, b)
             if mode == FIXED_POINT_ITERATIONS:
-                fixedPointIterations.process(function, a, b)
+                x = fixedPointIterations.process(function, a, b)
             if mode == EXIT:
                 return
         except tools.MethodError as e:
-            print(e)
+            print('Caution! %s' % e)
+            print('Answer x=%s', x)
+# cos(x)^3+(x^3)*exp(x)-(x^6)-35

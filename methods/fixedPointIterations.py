@@ -26,6 +26,9 @@ def process(func, a, b, eps=1e-10):
     L = 2 / (A + B) * (-1 if va > 0 else 1)
     Q = (A - B) / (A + B)
     Q = 1 if Q > 1 else Q
+    print(type(abc.x))
+    print(type(L))
+    print(type(func))
     phi = abc.x - L * func
     prev_x = a if va * tools.eval_func_at_point(sd, a) > 0 else b
     i = 1

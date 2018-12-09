@@ -10,7 +10,7 @@ def eval_func_at_point(func, point):
     """
     if type(func) is str:
         func = str_to_func(func)
-    return func.subs(abc.x, point).evalf()
+    return func.evalf(subs={abc.x: point}, n=21)
 
 
 def derivative(func, level=1):
