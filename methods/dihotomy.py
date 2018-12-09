@@ -1,6 +1,4 @@
-import inquirer
 import tools
-from sympy import abc
 
 
 def end_condition(l, r, eps):
@@ -31,17 +29,3 @@ def process(func, a, b, eps=1e-10):
             value_at_left = value_at_x
             left, right = curr_x, right
         i += 1
-
-
-def init():
-    # questions = [
-    #     inquirer.Text('function', message="Enter source function, f(x) = "),
-    #     inquirer.Text('a', message="Enter the left-border"),
-    #     inquirer.Text('b', message="Enter the right-border"),
-    # ]
-    # answers = inquirer.prompt(questions)
-    answers = {'function': 'cos(x)^3+(x^3)*exp(x)-(x^6)-35', 'a': 4, 'b': 6}
-    function = tools.sympify(answers.get('function').replace('^', '**'))
-    print("You entered f(x) = %s" % function)
-    process(function, answers.get('a'), answers.get('b'))
-# print(tools.eval_func_at_point(answers.get('function'), 4))
