@@ -1,7 +1,7 @@
 import tools
 
 
-def process(func, a, b, eps=1e-10):
+def process(func, a, b, eps=1e-7):
     fd = tools.derivative(func)
     sd = tools.derivative(fd)
     print("f(x)'=%s" % fd)

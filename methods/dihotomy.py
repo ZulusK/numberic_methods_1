@@ -5,7 +5,7 @@ def end_condition(l, r, eps):
     return abs(l - r) <= eps
 
 
-def process(func, a, b, eps=1e-10):
+def process(func, a, b, eps=1e-7):
     va = tools.eval_func_at_point(func, a)
     vb = tools.eval_func_at_point(func, b)
     print("f(%s)=%s, f(%s)=%s" % (a, va, b, vb))

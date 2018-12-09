@@ -1,7 +1,5 @@
 import inquirer
-from methods import dihotomy
-from methods import fixedPointIterations
-from methods import simplifiedNewton
+from methods import lobachevskiy, simplifiedNewton, fixedPointIterations, dihotomy
 import re
 import tools
 
@@ -50,27 +48,28 @@ def ask_function():
 
 
 def init():
-    questions = [
-        inquirer.List('mode',
-                      message="Choose method of computations:",
-                      choices=[SIMPLIFIED_NEWTON, FIXED_POINT_ITERATIONS, DICHOTOMY, EXIT],
-                      ),
-    ]
-    while True:
-        try:
-            answers = inquirer.prompt(questions)
-            (function, a, b) = ask_function()
-            x = None
-            mode = answers.get('mode')
-            if mode == SIMPLIFIED_NEWTON:
-                x = simplifiedNewton.process(function, a, b)
-            if mode == DICHOTOMY:
-                x = dihotomy.process(function, a, b)
-            if mode == FIXED_POINT_ITERATIONS:
-                x = fixedPointIterations.process(function, a, b)
-            if mode == EXIT:
-                return
-        except tools.MethodError as e:
-            print('Caution! %s' % e)
-            print('Answer x=%s', x)
+    print('x=%s' % lobachevskiy.process([12, 6, -15, -6, 1]))
+    # questions = [
+    #     inquirer.List('mode',
+    #                   message="Choose method of computations:",
+    #                   choices=[SIMPLIFIED_NEWTON, FIXED_POINT_ITERATIONS, DICHOTOMY, EXIT],
+    #                   ),
+    # ]
+    # while True:
+    #     try:
+    #         answers = inquirer.prompt(questions)
+    #         (function, a, b) = ask_function()
+    #         x = None
+    #         mode = answers.get('mode')
+    #         if mode == SIMPLIFIED_NEWTON:
+    #             x = simplifiedNewton.process(function, a, b)
+    #         if mode == DICHOTOMY:
+    #             x = dihotomy.process(function, a, b)
+    #         if mode == FIXED_POINT_ITERATIONS:
+    #             x = fixedPointIterations.process(function, a, b)
+    #         if mode == EXIT:
+    #             return
+    #     except tools.MethodError as e:
+    #         print('Caution! %s' % e)
+    #         print('Answer x=%s', x)
 # cos(x)^3+(x^3)*exp(x)-(x^6)-35
